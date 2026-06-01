@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import type { DropDownItem } from '../types';   
 import { readDropDownData } from '../services/recipe';
+import { useDropDownDataStore } from '../stores/DropDownDataStore';
 import { capitalize } from '../utils/formatter';
 
 interface DropDownProps {
@@ -21,26 +22,22 @@ interface DropDownProps {
 }
 
 export default function DropDown({ domain, setDropDownItem, path, sx, parentItemsOnly = false }: DropDownProps) {
+    const { data: dropDownData, error, fetchData } = useDropDownDataStore();
     const defaultItem: DropDownItem = {
         id: '',
         name: ''
     };
 
-    const [dropDownItems, setDropDownItems] = useState<DropDownItem[]>([]);
+    //const [dropDownItems, setDropDownItems] = useState<DropDownItem[]>([]);
     const [selectedItem, setSelectedItem] = useState<DropDownItem>(defaultItem);
 
     // TODO: Call the drop down data apis at page load and put the values in state, then use that state to populate the drop down options
     useEffect(() => {
-        const fetchData = async () => {
-            const data = await readDropDownData(domain, path);
-            setDropDownItems(data);
-        };
-    
-        fetchData();
-    }, []);
+        fetchData(path);
+    }, [path, fetchData]);
 
     const handleChange = (event: SelectChangeEvent) => {
-        const selectedItem = dropDownItems.find(item => item.id === event.target.value);
+        const selectedItem = dropDownData?.find(item => item.id === event.target.value);
 
         setSelectedItem(selectedItem || defaultItem);
 
@@ -51,10 +48,10 @@ export default function DropDown({ domain, setDropDownItem, path, sx, parentItem
 
     const menuItems: JSX.Element[] = [];
 
-    if (dropDownItems.some(item => item.parentId)) {
+    if (dropDownData?.some(item => item.parentId)) {
         const groupedItems: { [key: string]: DropDownItem[] } = {};
 
-        dropDownItems.forEach(item => {
+        dropDownData?.forEach(item => {
             const parentId = item.parentId || 'ungrouped';
             if (!groupedItems[parentId]) {
                 groupedItems[parentId] = [];
@@ -85,7 +82,7 @@ export default function DropDown({ domain, setDropDownItem, path, sx, parentItem
             }
         }
     } else {
-        for (const item of dropDownItems) {
+        for (const item of dropDownData || []) {
             menuItems.push(
                 <MenuItem key={item.id} value={item.id}>
                     {item.name}

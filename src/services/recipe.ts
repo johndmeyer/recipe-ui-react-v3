@@ -12,7 +12,7 @@ import {
     units
 } from './mockData';
 
-export const readRecipes = async (domain: string): Promise<Array<Recipe>> => {
+export const readRecipes = async (): Promise<Array<Recipe>> => {
     // const results: Array<recipe> = [];
 
     // try {
@@ -23,7 +23,7 @@ export const readRecipes = async (domain: string): Promise<Array<Recipe>> => {
     // }
 
     // return results;
-    return recipes;
+    return recipes.map((recipe, index) => ({ id: index, ...recipe  }));
 }
 
 export const readRecipeDetail = async (domain: string, recipeId: string): Promise<RecipeDetail> => {
@@ -47,7 +47,7 @@ export const readRecipeDetail = async (domain: string, recipeId: string): Promis
     return recipeDetail;
 }
 
-export const readDropDownData = async (domain: string, path: string): Promise<Array<DropDownItem>> => {
+export const readDropDownData = async (path: string | undefined): Promise<Array<DropDownItem>> => {
     // const results: Array<DropDownItem> = [];
 
     // try {

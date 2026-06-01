@@ -18,10 +18,7 @@ export interface Equipment extends DropDownItem {
 }
 
 export interface Ingredient extends DropDownItem  {
-    id: string;
-    name: string;
     description: string;
-    parentId?: string;
 }
 
 export interface Recipe {

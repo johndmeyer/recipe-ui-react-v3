@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Recipe } from '../types';
-import { readRecipes } from '../services/recipe';
+import { useRecipeStore } from '../stores/RecipeStore';
 
 interface ResultsTableProps {
     domain: string
@@ -11,7 +10,7 @@ interface ResultsTableProps {
 }
 
 export default function ResultsTable({domain, setSelectedRecipeId, setShowRecipeDetailEdit}: ResultsTableProps) {
-    const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const { data: recipes, error, fetchData } = useRecipeStore();
 
     const handleRowClick = (id: string) => {
         setSelectedRecipeId(id);
@@ -19,12 +18,8 @@ export default function ResultsTable({domain, setSelectedRecipeId, setShowRecipe
     }
     
     useEffect(() => {
-        const fetchData = async () => {
-            const data = await readRecipes(domain);
-            setRecipes(data.map((recipe, index) => ({ id: index, ...recipe })));
-        };
         fetchData();
-    }, [domain]);
+    }, [fetchData]);
 
     const columns: GridColDef[] = [
         {
